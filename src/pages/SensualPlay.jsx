@@ -174,4 +174,73 @@ export default function SensualPlay({ onAddBucket }) {
   const pendingResponses = items.filter(i => i.submitter_token && i.submitter_token !== myToken && !i.partner_response).length
 
   return (
-    <div className="fade-up​​​​​​​​​​​​​​​​
+    <div className="fade-up">
+      <SectionHeader tagline="Ignite & explore" title="Sensual Play"
+        onNew={generateAI} loading={loading} newLabel="↻ New Ideas" />
+
+      {pendingResponses > 0 && (
+        <div style={{ background:'rgba(192,68,90,.1)', border:'1px solid rgba(192,68,90,.3)',
+          borderRadius:10, padding:'12px 16px', marginBottom:16, display:'flex', alignItems:'center', gap:10 }}>
+          <span style={{ color:C.rose }}>●</span>
+          <span style={{ color:'rgba(245,236,215,.7)', fontSize:13 }}>
+            {pendingResponses} suggestion{pendingResponses!==1?'s':''} from your partner awaiting your response
+          </span>
+        </div>
+      )}
+
+      <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:18 }}>
+        {CATS.map(c => <Pill key={c} label={c} active={cat===c} onClick={()=>setCat(c)} />)}
+        <button onClick={() => setAddModal(true)} style={{
+          background:'rgba(192,68,90,.12)', border:'1px solid rgba(192,68,90,.3)',
+          borderRadius:20, padding:'5px 14px', color:C.rose, fontSize:11, letterSpacing:1, textTransform:'uppercase',
+        }}>+ Add</button>
+      </div>
+
+      {error && <ErrorBox msg={error} onRetry={generateAI} />}
+
+      {filtered.map(item => (
+        <SensualCard key={item.id} item={item} myToken={myToken}
+          onRate={handleRate} onTried={handleTried} onRespond={handleRespond} />
+      ))}
+
+      {!filtered.length && !loading && <Empty icon="❋" msg="No items yet — tap ↻ New Ideas or + Add" />}
+
+      <Modal open={addModal} onClose={() => setAddModal(false)} title="Add to Sensual Play">
+        <div style={{ marginBottom:16 }}>
+          <div style={{ fontSize:11, letterSpacing:2, color:`${C.gold}80`, textTransform:'uppercase', marginBottom:10 }}>Category</div>
+          <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+            {CATS.filter(c=>c!=='All').map(c => <Pill key={c} label={c} active={newCat===c} onClick={()=>setNewCat(c)} color={C.rose} />)}
+          </div>
+        </div>
+
+        <div style={{ marginBottom:16 }}>
+          <input value={newTitle} onChange={e=>setNewTitle(e.target.value)} placeholder="Title or description"
+            style={{ width:'100%', background:'rgba(0,0,0,.3)', border:'1px solid rgba(255,255,255,.12)',
+              borderRadius:10, padding:'13px 16px', color:C.cream, fontSize:14, boxSizing:'border-box', outline:'none' }} />
+        </div>
+
+        <Textarea label="Details (optional)" value={newDesc} onChange={setNewDesc} placeholder="Describe it…" rows={3} />
+
+        <div style={{ marginBottom:16 }}>
+          <div style={{ fontSize:11, letterSpacing:2, color:`${C.gold}80`, textTransform:'uppercase', marginBottom:10 }}>Heat Level</div>
+          <Peppers count={newPep} max={3} onChange={setNewPep} />
+        </div>
+
+        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:20 }}>
+          <button onClick={() => setAnon(a=>!a)} style={{
+            width:36, height:20, borderRadius:10, border:'none', position:'relative',
+            background: anon ? C.rose : 'rgba(255,255,255,.1)', transition:'background .2s',
+          }}>
+            <div style={{ width:14, height:14, borderRadius:'50%', background:'#fff', position:'absolute',
+              top:3, left: anon ? 18 : 3, transition:'left .2s' }} />
+          </button>
+          <span style={{ fontSize:13, color:'rgba(245,236,215,.6)' }}>
+            {anon ? 'Submit anonymously (partner gets alerted)' : 'Submit as yourself'}
+          </span>
+        </div>
+
+        <Btn onClick={handleAdd} style={{ width:'100%' }} disabled={!newTitle.trim()}>Add to Sensual Play</Btn>
+      </Modal>
+    </div>
+  )
+}
