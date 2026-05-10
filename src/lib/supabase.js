@@ -183,4 +183,17 @@ export async function favoritesGet(coupleId) {
   const { data } = await supabase.from('favorites')
     .select('*').eq('couple_id', coupleId)
   const out = { dates:[], talk:[], sensual:[], mind:[] }
-  ;(data||[]).forEach(r​​​​​​​​​​​​​​​​
+  ;(data||[]).forEach(r => { if (out[r.section]) out[r.section].push(r.item_data) })
+  return out
+}
+export async function favoriteToggle(coupleId, section, item) {
+  const key = item.title || item.question || ''
+  const { data: existing } = await supabase.from('favorites')
+    .select('id').eq('couple_id', coupleId).eq('section', section).eq('item_key', key)
+  if (existing?.length) {
+    await supabase.from('favorites').delete().eq('id', existing[0].id)
+    return false
+  }
+  await supabase.from('favorites').insert({ couple_id: coupleId, section, item_key: key, item_data: item })
+  return true
+}
