@@ -1,13 +1,9 @@
-const API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
 
 export async function askClaude(prompt, maxTokens = 1200) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  const res = await fetch('/api/chat', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
       max_tokens: maxTokens,
@@ -30,8 +26,6 @@ export async function askClaude(prompt, maxTokens = 1200) {
   if (start === -1 || end === -1) throw new Error('No JSON array: ' + clean.slice(0, 100))
   return JSON.parse(clean.slice(start, end + 1))
 }
-
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
 
 export function getMonthYear() {
   const d = new Date()
